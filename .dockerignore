@@ -1,6 +1,13 @@
+# Git
+.git
+.gitignore
+
 # Python
 __pycache__/
 *.py[cod]
+*.pyc
+*.pyo
+*.pyd
 *.so
 *.egg-info/
 .eggs/
@@ -8,21 +15,33 @@ __pycache__/
 # Virtual environments
 .venv/
 venv/
+ENV/
+env/
 
 # Environment variables
 .env
 
-# Generated files
+# Streamlit cache
+.streamlit/
+
+# Generated data
 downloads/
 vector_db/
+*.sqlite3
 
 # IDE
 .vscode/
 .idea/
-
-# macOS
-.DS_Store
+*.iml
 
 # Logs
 *.log
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Jupyter
+.ipynb_checkpoints/
 
