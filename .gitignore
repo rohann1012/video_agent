@@ -1,0 +1,43 @@
+# Python
+__pycache__/
+*.py[cod]
+*.so
+*.egg-info/
+.eggs/
+.python-version
+
+# Virtual environment
+.venv/
+venv/
+ENV/
+env/
+
+# Environment variables
+.env
+
+# Streamlit
+.streamlit/
+
+# Data and generated files
+downloads/
+vector_db/
+*.sqlite3
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE/editor files
+.vscode/
+.idea/
+*.iml
+
+# Logs
+*.log
+
+# Mac
+.AppleDouble
+.LSOverride
+
+# Jupyter
+.ipynb_checkpoints/
