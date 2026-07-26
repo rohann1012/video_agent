@@ -21,7 +21,7 @@ langchain-community==0.3.27
 langchain-mistralai==0.2.11
 mistralai==1.9.10
 langsmith==0.10.6  
-
+langchain-chroma==0.2.5
 
 # Vector Database
 chromadb==1.0.15
