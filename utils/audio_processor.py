@@ -1,42 +1,48 @@
 import yt_dlp
 from pydub import AudioSegment
 import os
-import shutil
 
 DOWNLOAD_DIR = 'downloads'
 os.makedirs(DOWNLOAD_DIR,exist_ok = True)
-
-def download_youtube_audio(url :str) ->str:
+def download_youtube_audio(url: str) -> str:
     output_path = os.path.join(DOWNLOAD_DIR, "%(title)s.%(ext)s")
+
     ydl_opts = {
-    "format": "bestaudio/best",
-    "outtmpl": output_path,
-    "quiet": False,          # Changed from True to False
-    "noplaylist": True,
-    "geo_bypass": True,
+        "format": "bestaudio/best",
+        "outtmpl": output_path,
+        "quiet": False,
+        "noplaylist": True,
+        "geo_bypass": True,
+        "extractor_args": {
+            "youtube": {
+                "player_client": ["android", "web"]
+            }
+        },
+        "postprocessors": [
+            {
+                "key": "FFmpegExtractAudio",
+                "preferredcodec": "wav",
+                "preferredquality": "192",
+            }
+        ],
+    }
 
-    "extractor_args": {
-        "youtube": {
-            "player_client": ["android", "web"]
-        }
-    },
+    try:
+        with yt_dlp.YoutubeDL(ydl_opts) as ydl:
+            info = ydl.extract_info(url, download=True)
 
-    "postprocessors": [
-        {
-            "key": "FFmpegExtractAudio",
-            "preferredcodec": "wav",
-            "preferredquality": "192",
-        }
-    ],
-}
-    with yt_dlp.YoutubeDL(ydl_opts) as ydl:
-        info = ydl.extract_info(url, download=True)
+        downloaded_file = ydl.prepare_filename(info)
+        return os.path.splitext(downloaded_file)[0] + ".wav"
 
-    downloaded_file = ydl.prepare_filename(info)
-    filename = os.path.splitext(downloaded_file)[0] + ".wav"
+    except yt_dlp.utils.DownloadError:
+        raise Exception(
+        "⚠️ This YouTube video cannot be downloaded.\n\n"
+        "YouTube requires authentication for this video or has blocked automated downloads.\n\n"
+        "Please download the video yourself and upload the video/audio file instead."
+    )
 
-    return filename
-
+    except Exception as e:
+        raise Exception(f"Unexpected error while downloading YouTube video: {e}")
 
 def convert_to_wav(input_path: str) -> str:
     """Convert any audio/video file to WAV format using pydub."""
@@ -62,27 +68,16 @@ def chunk_audio(wav_path: str, chunk_seconds: int = 30) -> list:
     return chunks
 
 def process_input(source: str) -> list:
-    try:
-        if source.startswith("http://") or source.startswith("https://"):
-            print("Detected YouTube URL. Downloading audio...")
-            wav_path = download_youtube_audio(source)
-        else:
-            print("Detected local file. Converting to WAV...")
-            wav_path = convert_to_wav(source)
+    if source.startswith("http://") or source.startswith("https://"):
+        print("Detected YouTube URL. Downloading audio...")
+        wav_path = download_youtube_audio(source)
+    else:
+        print("Detected local file. Converting to WAV...")
+        wav_path = convert_to_wav(source)
 
-        print("Chunking audio...")
-        chunks = chunk_audio(wav_path)
-        print(f"Audio ready — {len(chunks)} chunk(s) created.")
+    print("Chunking audio...")
+    chunks = chunk_audio(wav_path)
+    print(f"Audio ready — {len(chunks)} chunk(s) created.")
 
-        return chunks
-
-    except yt_dlp.utils.DownloadError:
-        raise Exception(
-            "Unable to download this YouTube video. "
-            "YouTube may require authentication or has blocked automated downloads. "
-            "Please upload the video/audio file directly."
-        )
-
-    except Exception as e:
-        raise Exception(f"Processing failed: {e}")
+    return chunks
 

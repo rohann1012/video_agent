@@ -284,7 +284,7 @@ def main():
     st.markdown('<p class="section-label">01 · SOURCE</p>', unsafe_allow_html=True)
 
     with st.container(border=True):
-        tab_url, tab_upload = st.tabs(["🔗  YouTube URL", "📁  Upload a video/audio file"])
+        tab_url, tab_upload = st.tabs(["🔗  YouTube URL (Beta)", "📁  Upload Video/Audio (Recommended)"])
 
         source = None
 
@@ -296,6 +296,26 @@ def main():
             )
             if url.strip():
                 source = url.strip()
+
+            st.markdown(
+                """
+                <div style="
+                    margin-top: 0.6rem;
+                    padding: 0.7rem 0.9rem;
+                    background: var(--surface-2);
+                    border: 1px solid var(--border);
+                    border-left: 3px solid var(--amber);
+                    border-radius: 8px;
+                    color: var(--muted);
+                    font-size: 0.85rem;
+                ">
+                    <strong style="color: var(--text);">Note:</strong> Some YouTube videos
+                    cannot be downloaded due to YouTube's authentication requirements.
+                    If that happens, upload the video or audio file directly instead.
+                </div>
+                """,
+                unsafe_allow_html=True,
+            )
 
         with tab_upload:
             uploaded_file = st.file_uploader(
@@ -394,6 +414,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
-
-    
