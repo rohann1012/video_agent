@@ -62,15 +62,27 @@ def chunk_audio(wav_path: str, chunk_seconds: int = 30) -> list:
     return chunks
 
 def process_input(source: str) -> list:
-    if source.startswith("http://") or source.startswith("https://"):
-        print("Detected YouTube URL. Downloading audio...")
-        wav_path = download_youtube_audio(source)
-    else:
-        print("Detected local file. Converting to WAV...")
-        wav_path = convert_to_wav(source)
+    try:
+        if source.startswith("http://") or source.startswith("https://"):
+            print("Detected YouTube URL. Downloading audio...")
+            wav_path = download_youtube_audio(source)
+        else:
+            print("Detected local file. Converting to WAV...")
+            wav_path = convert_to_wav(source)
 
-    print("Chunking audio...")
-    chunks = chunk_audio(wav_path)
-    print(f"Audio ready — {len(chunks)} chunk(s) created.")
-    return chunks
+        print("Chunking audio...")
+        chunks = chunk_audio(wav_path)
+        print(f"Audio ready — {len(chunks)} chunk(s) created.")
+
+        return chunks
+
+    except yt_dlp.utils.DownloadError:
+        raise Exception(
+            "Unable to download this YouTube video. "
+            "YouTube may require authentication or has blocked automated downloads. "
+            "Please upload the video/audio file directly."
+        )
+
+    except Exception as e:
+        raise Exception(f"Processing failed: {e}")
 

@@ -19,7 +19,7 @@ if os.path.exists("downloads"):
 
 os.makedirs("downloads", exist_ok=True)
 
-st.set_page_config(page_title="Video Agent — AI Meeting Assistant", page_icon="🎙️", layout="wide")
+st.set_page_config(page_title="Video Agent  AI Meeting Assistant", page_icon="🎙️", layout="wide")
 
 ACCEPTED_TYPES = ["mp4", "mov", "mkv", "avi", "webm", "mp3", "wav", "m4a"]
 
@@ -204,7 +204,7 @@ def render_hero():
             <div class="hero-eyebrow"><span class="dot"></span> ON AIR — TRANSCRIPTION READY</div>
             <h1>Video Agent</h1>
             <p>Drop in a YouTube link or upload a recording. Get a clean transcript,
-            a summary, action items, decisions, open questions — then chat with the
+            a summary, action items, decisions, open questions then chat with the
             whole meeting like it's still in the room.</p>
         </div>
         """,
