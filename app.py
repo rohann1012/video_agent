@@ -19,7 +19,7 @@ if os.path.exists("downloads"):
 
 os.makedirs("downloads", exist_ok=True)
 
-st.set_page_config(page_title="Reelmind — AI Video Assistant", page_icon="🎙️", layout="wide")
+st.set_page_config(page_title="Video Agent — AI Meeting Assistant", page_icon="🎙️", layout="wide")
 
 ACCEPTED_TYPES = ["mp4", "mov", "mkv", "avi", "webm", "mp3", "wav", "m4a"]
 
@@ -202,7 +202,7 @@ def render_hero():
         """
         <div class="hero">
             <div class="hero-eyebrow"><span class="dot"></span> ON AIR — TRANSCRIPTION READY</div>
-            <h1>Reelmind</h1>
+            <h1>Video Agent</h1>
             <p>Drop in a YouTube link or upload a recording. Get a clean transcript,
             a summary, action items, decisions, open questions — then chat with the
             whole meeting like it's still in the room.</p>
@@ -247,9 +247,7 @@ def run_pipeline(source: str) -> dict:
     status.write("❓ Extracting open questions...")
     questions = extract_questions(transcript)
 
-    status.write("🧠 Building knowledge base for chat...")
-    rag_chain = build_rag_chain(transcript)
-
+    status.write("🧠 Ready for chat when needed")
     status.update(label="✅ Ready", state="complete", expanded=False)
 
     return {
@@ -259,7 +257,6 @@ def run_pipeline(source: str) -> dict:
         "action_items": action_items,
         "key_decisions": decisions,
         "open_questions": questions,
-        "rag_chain": rag_chain,
     }
 
 
@@ -281,6 +278,8 @@ def main():
         st.session_state.chat_history = []
     if "temp_path" not in st.session_state:
         st.session_state.temp_path = None
+    if "rag_chain" not in st.session_state:
+        st.session_state.rag_chain = None
 
     st.markdown('<p class="section-label">01 · SOURCE</p>', unsafe_allow_html=True)
 
@@ -326,6 +325,7 @@ def main():
 
             st.session_state.result = run_pipeline(resolved_source)
             st.session_state.chat_history = []  # reset chat for new source
+            st.session_state.rag_chain = None
         except Exception as e:
             st.session_state.result = None
             st.error(f"❌ Error: {e}")
@@ -372,7 +372,11 @@ def main():
                         st.write(question)
 
                     try:
-                        answer = ask_question(result["rag_chain"], question)
+                        if st.session_state.rag_chain is None:
+                            with st.spinner("🧠 Building knowledge base for chat..."):
+                                st.session_state.rag_chain = build_rag_chain(result["transcript"])
+
+                        answer = ask_question(st.session_state.rag_chain, question)
                     except Exception as e:
                         answer = f"❌ Error: {e}"
 

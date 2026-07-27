@@ -10,11 +10,12 @@ CHROMA_DIR = "vector_db"
 COLLECTION_NAME = "meeting_transcript"
 EMBEDDING_MODEL = "all-MiniLM-L6-v2"
 
-# Load embedding model once
-embeddings = HuggingFaceEmbeddings(
-    model_name=EMBEDDING_MODEL,
-    model_kwargs={"device": "cpu"}
-)
+
+def get_embeddings():
+    return HuggingFaceEmbeddings(
+        model_name=EMBEDDING_MODEL,
+        model_kwargs={"device": "cpu"}
+    )
 
 
 def build_vector_store(transcript: str) -> Chroma:
@@ -41,7 +42,7 @@ def build_vector_store(transcript: str) -> Chroma:
 
     vector_store = Chroma.from_documents(
         documents=docs,
-        embedding=embeddings,
+        embedding=get_embeddings(),
         collection_name=COLLECTION_NAME,
         persist_directory=CHROMA_DIR
     )
@@ -52,7 +53,7 @@ def build_vector_store(transcript: str) -> Chroma:
 def load_vector_store() -> Chroma:
     return Chroma(
         collection_name=COLLECTION_NAME,
-        embedding_function=embeddings,
+        embedding_function=get_embeddings(),
         persist_directory=CHROMA_DIR
     )
 
